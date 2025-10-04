@@ -97,125 +97,63 @@
 
 
 
-// // screens/RegisterEmailScreen.js
-// import React, { useState, useContext } from 'react';
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-// import { LinearGradient } from 'expo-linear-gradient';
-// import { AuthContext } from '../context/AuthProvider';
+// screens/RegisterEmailScreen.js
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AuthContext } from '../context/AuthProvider';
 
-// export default function RegisterEmailScreen({ navigation, route }) {
-//   const { registerWithEmail } = useContext(AuthContext);
-//   const [name, setName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
+export default function RegisterEmailScreen({ navigation, route }) {
+  const { registerWithEmail } = useContext(AuthContext);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-//   const role = route.params?.role;
-//   const subrole = route.params?.subrole;
+  const role = route.params?.role;
+  const subrole = route.params?.subrole;
 
-//   const submit = async () => {
-//     if (!name || !email || !password) {
-//       Alert.alert('Missing', 'Please fill all fields');
-//       return;
-//     }
-//     try {
-//       const roleObj = { role, subrole };
-//       await registerWithEmail(name, email, password, roleObj);
-//       navigation.replace('Home');
-//     } catch (err) {
-//       Alert.alert('Register Error', err.message);
-//     }
-//   };
-
-//   return (
-//     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
-//       <Image source={require('../assets/Team SkyTrace.png')} style={{ width: 100, height: 100, marginBottom: 20 }} />
-//       <Text style={styles.h1}>Create account</Text>
-
-//       <TextInput placeholder="Full name" placeholderTextColor="rgba(255,255,255,0.5)" style={styles.input} value={name} onChangeText={setName} />
-//       <TextInput placeholder="Email" placeholderTextColor="rgba(255,255,255,0.5)" style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
-//       <TextInput placeholder="Password" placeholderTextColor="rgba(255,255,255,0.5)" secureTextEntry style={styles.input} value={password} onChangeText={setPassword} />
-
-//       <TouchableOpacity style={styles.button} onPress={submit}>
-//         <LinearGradient colors={["#00E0FF", "#A020F0"]} style={styles.gradient}>
-//           <Text style={styles.btnText}>Register</Text>
-//         </LinearGradient>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity onPress={() => navigation.navigate('LoginEmail')} style={{ marginTop: 12 }}>
-//         <Text style={{ color: '#fff', textDecorationLine: 'underline' }}>Login with email</Text>
-//       </TouchableOpacity>
-//     </LinearGradient>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, alignItems: 'center', paddingTop: 60 },
-//   h1: { color: '#fff', fontSize: 18, marginBottom: 20 },
-//   input: { width: '80%', padding: 12, borderRadius: 10, marginBottom: 12, backgroundColor: 'rgba(255,255,255,0.04)', color: '#fff' },
-//   button: { width: '80%', borderRadius: 30, overflow: 'hidden' },
-//   gradient: { padding: 12, alignItems: 'center' },
-//   btnText: { color: '#000', fontWeight: '700' }
-// });
-
-
-
-
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { db } from '../firebaseConfig';
-import { addDoc, collection } from 'firebase/firestore';
-
-export default function RegisterEmail() {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { role, subrole } = route.params || {};
-
-  const handleRegister = async () => {
-    // Save user data to Firestore
-    try {
-      await addDoc(collection(db, 'users'), {
-        role,
-        subrole: subrole || null,
-        createdAt: new Date(),
-      });
-    } catch (error) {
-      console.warn('Firestore save failed:', error);
+  const submit = async () => {
+    if (!name || !email || !password) {
+      Alert.alert('Missing', 'Please fill all fields');
+      return;
     }
-
-    // Navigate to the relevant screen based on subrole
-    switch (subrole) {
-      case 'Weather Enthusiast':
-        navigation.navigate('WeatherEnthusiast');
-        break;
-      case 'Professional Forecaster':
-        navigation.navigate('Forecaster');
-        break;
-      case 'Outdoor Activities':
-        navigation.navigate('OutdoorActivities');
-        break;
-      case 'Stargazers':
-        navigation.navigate('Stargazer');
-        break;
-      default:
-        navigation.navigate('Home'); // fallback
+    try {
+      const roleObj = { role, subrole };
+      await registerWithEmail(name, email, password, roleObj);
+      navigation.replace('Home');
+    } catch (err) {
+      Alert.alert('Register Error', err.message);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Register with Email</Text>
-      {/* Your email input fields go here */}
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+    <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
+      <Image source={require('../assets/Team SkyTrace.png')} style={{ width: 100, height: 100, marginBottom: 20 }} />
+      <Text style={styles.h1}>Create account</Text>
+
+      <TextInput placeholder="Full name" placeholderTextColor="rgba(255,255,255,0.5)" style={styles.input} value={name} onChangeText={setName} />
+      <TextInput placeholder="Email" placeholderTextColor="rgba(255,255,255,0.5)" style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
+      <TextInput placeholder="Password" placeholderTextColor="rgba(255,255,255,0.5)" secureTextEntry style={styles.input} value={password} onChangeText={setPassword} />
+
+      <TouchableOpacity style={styles.button} onPress={submit}>
+        <LinearGradient colors={["#00E0FF", "#A020F0"]} style={styles.gradient}>
+          <Text style={styles.btnText}>Register</Text>
+        </LinearGradient>
       </TouchableOpacity>
-    </View>
+
+      <TouchableOpacity onPress={() => navigation.navigate('LoginEmail')} style={{ marginTop: 12 }}>
+        <Text style={{ color: '#fff', textDecorationLine: 'underline' }}>Login with email</Text>
+      </TouchableOpacity>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 22, marginBottom: 20 },
-  button: { backgroundColor: '#06B6D4', padding: 12, borderRadius: 8 },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' }
+  container: { flex: 1, alignItems: 'center', paddingTop: 60 },
+  h1: { color: '#fff', fontSize: 18, marginBottom: 20 },
+  input: { width: '80%', padding: 12, borderRadius: 10, marginBottom: 12, backgroundColor: 'rgba(255,255,255,0.04)', color: '#fff' },
+  button: { width: '80%', borderRadius: 30, overflow: 'hidden' },
+  gradient: { padding: 12, alignItems: 'center' },
+  btnText: { color: '#000', fontWeight: '700' }
 });
+

@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '../../firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WeatherEnthusiast({ route, navigation }) {
