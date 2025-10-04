@@ -81,62 +81,18 @@
 //     navigation.navigate('RegisterEmail', { role, subrole });
 //   };
 
-//   return (
-//     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
-//       <Text style={styles.h1}>What interests you most?</Text>
+//   const onSelect = async () => {
+//     try {
+//       // Save user to Firestore
+//       await addDoc(collection(db, "users"), {
+//         role: selectedRole,
+//         language: language,
+//         createdAt: new Date(),
+//       });
+//     } catch (error) {
+//       console.warn("Firestore save failed:", error);
+//     }
 
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Weather Enthusiast')}>
-//         <Text style={styles.cardText}>Weather Enthusiast</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Professional Forecaster')}>
-//         <Text style={styles.cardText}>Professional Forecaster</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Outdoor Activities')}>
-//         <Text style={styles.cardText}>Outdoor Activities</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Stargazers')}>
-//         <Text style={styles.cardText}>Stargazers</Text>
-//       </TouchableOpacity>
-//     </LinearGradient>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, alignItems: 'center', paddingTop: 50 },
-//   h1: { color: '#fff', fontSize: 18, marginBottom: 25 },
-//   card: { width: '80%', padding: 18, borderRadius: 14, marginVertical: 10, backgroundColor: 'rgba(255,255,255,0.04)', alignItems: 'center' },
-//   cardText: { color: '#fff', fontSize: 15 }
-// });
-
-
-
-
-
-
-// if the user select (Weather Enthusiast, Professional Forecaster, Outdoor Activities, Stargazers) we navigate to RegisterEmail with role after that it will redirect to the relevant page (WeatherEnthusiast, Forecaster, OutdoorActivities, Stargazer)
-
-
-
-
-
-
-
-
-
-// import React from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// import { LinearGradient } from 'expo-linear-gradient';
-
-// export default function SubRoleScreen({ navigation, route }) {
-//   const { role } = route.params || {};
-
-//   const onSelect = (subrole) => {
-//     // Navigate to RegisterEmail with both role and subrole
-//     navigation.navigate('RegisterEmail', { role, subrole });
-//   };
 
 //   return (
 //     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
@@ -169,138 +125,232 @@
 // });
 
 
-
-
-
-
-
+// screens/SelectRoleScreen.js
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  Platform,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { db } from "../firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
-export default function SubRoleScreen() {
+const { width, height } = Dimensions.get("window");
+
+export default function SelectRoleScreen() {
+  const [selectedRole, setSelectedRole] = useState("Weather Enthusiast");
+  const [language, setLanguage] = useState("EN");
   const navigation = useNavigation();
-  const route = useRoute();
 
-  // Get role + language from previous screen
-  const { role, language } = route.params || {};
-
-  const [selectedInterests, setSelectedInterests] = useState([]);
-
-  const interests = [
-    { id: "weather", title: "🌦️ Weather Updates" },
-    { id: "farming", title: "🌾 Farming Tips" },
-    { id: "market", title: "💰 Market Prices" },
-    { id: "community", title: "👥 Farmer Community" },
-    { id: "ai", title: "🤖 Agriculture AI Assistant" },
+  const roles = [
+    {
+      id: "Weather Enthusiast",
+      title: "Weather Enthusiast",
+      desc: "Track weather patterns and make predictions",
+      icon: "🌦️",
+    },
+    {
+      id: "Professional Forecaster",
+      title: "Professional Forecaster",
+      desc: "Plan hiking, camping and outdoor adventure",
+      icon: "📈",
+    },
+    {
+      id: "Outdoor Activities",
+      title: "Outdoor Activities",
+      desc: "Contribute professional weather insights",
+      icon: "⛰️",
+    },
+    {
+      id: "Stargazers",
+      title: "Stargazers",
+      desc: "Explore night sky and celestial events",
+      icon: "☁️",
+    },
   ];
 
-  const toggleInterest = (id) => {
-    if (selectedInterests.includes(id)) {
-      setSelectedInterests(selectedInterests.filter((i) => i !== id));
-    } else {
-      setSelectedInterests([...selectedInterests, id]);
+  const handleContinue = async () => {
+    try {
+      // Save user to Firestore
+      await addDoc(collection(db, "users"), {
+        role: selectedRole,
+        language: language,
+        createdAt: new Date(),
+      });
+    } catch (error) {
+      console.warn("Firestore save failed:", error);
     }
-  };
 
-  const handleContinue = () => {
-    if (selectedInterests.length === 0) {
-      Alert.alert("Please select at least one interest");
-      return;
-    }
-    navigation.replace("SelectRoleScreen", {
-      role,
-      language,
-      interests: selectedInterests,
-    });
+    navigation.navigate("Home", { role: selectedRole, language });
   };
 
   return (
     <LinearGradient colors={["#0F172A", "#1E1B4B"]} style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.title}>Choose Your Interests</Text>
+      <View style={styles.contentWrapper}>
+        {/* Top Bar */}
+        <View style={styles.topBar}>
+          <Text style={styles.logoText}>☁️ SkyTrace</Text>
+          <View style={styles.languageSwitch}>
+            {["EN", "සිං", "த"].map((lang) => (
+              <TouchableOpacity
+                key={lang}
+                style={[styles.langBtn, language === lang && styles.langBtnSelected]}
+                onPress={() => setLanguage(lang)}
+              >
+                <Text
+                  style={[styles.langText, language === lang && styles.langTextSelected]}
+                >
+                  {lang}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Title */}
+        <Text style={styles.title}>Tell more about yourself</Text>
         <Text style={styles.subtitle}>
-          Select what you’d like to see on your {role} dashboard
+          What interests you most?
         </Text>
 
-        <View style={styles.cardContainer}>
-          {interests.map((item) => (
+        {/* Role Cards */}
+        <ScrollView
+          style={{ width: "100%" }}
+          contentContainerStyle={{
+            alignItems: "center",
+            paddingBottom: Platform.OS === "web" ? 30 : 20,
+          }}
+        >
+          {roles.map((role) => (
             <TouchableOpacity
-              key={item.id}
-              style={[
-                styles.card,
-                selectedInterests.includes(item.id) && styles.cardSelected,
-              ]}
-              onPress={() => toggleInterest(item.id)}
+              key={role.id}
+              style={[styles.card, selectedRole === role.id && styles.cardSelected]}
+              onPress={() => setSelectedRole(role.id)}
+              activeOpacity={0.8}
             >
-              <Text
-                style={[
-                  styles.cardText,
-                  selectedInterests.includes(item.id) && styles.cardTextSelected,
-                ]}
-              >
-                {item.title}
-              </Text>
+              <Text style={styles.icon}>{role.icon}</Text>
+              <Text style={styles.cardTitle}>{role.title}</Text>
+              <Text style={styles.cardDesc}>{role.desc}</Text>
+              {selectedRole === role.id && (
+                <Text style={styles.selectedLabel}>Selected</Text>
+              )}
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
 
         {/* Continue Button */}
         <TouchableOpacity style={styles.button} onPress={handleContinue}>
-          <LinearGradient colors={["#00E0FF", "#A020F0"]} style={styles.gradientBtn}>
+          <LinearGradient
+            colors={["#00E0FF", "#A020F0"]}
+            style={styles.gradientBtn}
+          >
             <Text style={styles.buttonText}>Continue</Text>
           </LinearGradient>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContent: {
-    paddingHorizontal: 16, // ✅ mobile-friendly horizontal padding
-    paddingTop: 30, // ✅ spacing from top
-    paddingBottom: 50, // ✅ bottom padding to avoid cutoff
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingHorizontal: width * 0.05,
+    paddingTop: Platform.OS === "web" ? 40 : height * 0.05,
   },
+  contentWrapper: {
+    width: "100%",
+    maxWidth: 800, // keeps layout centered on web
+    alignSelf: "center",
+  },
+  topBar: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: Platform.OS === "web" ? 25 : height * 0.03,
+  },
+  logoText: {
+    fontSize: width * 0.06,
+    fontWeight: "bold",
+    color: "white",
+  },
+  languageSwitch: {
+    flexDirection: "row",
+    backgroundColor: "#1E293B",
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  langBtn: { paddingVertical: 5, paddingHorizontal: 12 },
+  langBtnSelected: { backgroundColor: "#06B6D4" },
+  langText: { color: "#94A3B8", fontWeight: "600" },
+  langTextSelected: { color: "white" },
   title: {
-    fontSize: 22,
+    fontSize: width * 0.065,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: Platform.OS === "web" ? 12 : height * 0.01,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: width * 0.035,
     color: "#CBD5E1",
     textAlign: "center",
-    marginBottom: 20,
-    paddingHorizontal: 10,
+    marginBottom: Platform.OS === "web" ? 30 : height * 0.03,
   },
-  cardContainer: { marginTop: 10 },
   card: {
     backgroundColor: "#1E293B",
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    marginBottom: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderRadius: 15,
+    marginBottom: Platform.OS === "web" ? 20 : 15,
+    alignItems: "center",
+    width: "100%",
   },
   cardSelected: {
     borderWidth: 2,
     borderColor: "#06B6D4",
-    backgroundColor: "#334155",
   },
-  cardText: { color: "#CBD5E1", fontSize: 15, textAlign: "center" },
-  cardTextSelected: { color: "white", fontWeight: "600" },
-  button: { marginTop: 30, marginBottom: 20 }, // ✅ better mobile spacing
+  icon: { fontSize: width * 0.08, marginBottom: 8 },
+  cardTitle: {
+    fontSize: width * 0.045,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginBottom: 6,
+  },
+  cardDesc: {
+    fontSize: width * 0.033,
+    color: "#94A3B8",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  selectedLabel: {
+    fontSize: width * 0.032,
+    color: "#06B6D4",
+    fontWeight: "600",
+  },
+  button: {
+    width: "100%",
+    marginTop: Platform.OS === "web" ? 20 : height * 0.02,
+    marginBottom: Platform.OS === "web" ? 30 : height * 0.03,
+  },
   gradientBtn: {
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
   },
-  buttonText: { color: "white", fontSize: 16, fontWeight: "bold" },
+  buttonText: {
+    color: "white",
+    fontSize: width * 0.045,
+    fontWeight: "bold",
+  },
 });
