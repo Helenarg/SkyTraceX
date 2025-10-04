@@ -75,6 +75,7 @@ import OtpScreen from "./screens/OtpScreen";
 import LoginEmailScreen from "./screens/LoginEmailScreen";
 import { AuthProvider } from "./context/AuthProvider";
 import Home from "./screens/HomeScreen";
+import CommunityScreen from "./screens/CommunityScreen";
 
 // import LoginMobileScreen from "./screens/LoginMobileScreen";
 // import HomeScreen from "./screens/HomeScreen";
@@ -103,6 +104,7 @@ export default function App() {
         <Stack.Screen name="Fisherman" component={Fisherman} />
         <Stack.Screen name="Farmer" component={Farmer} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Community" component={CommunityScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     </AuthProvider>
