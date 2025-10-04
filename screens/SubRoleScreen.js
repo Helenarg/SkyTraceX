@@ -1,130 +1,3 @@
-// // screens/SubRoleScreen.js
-// import React from "react";
-// import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-// import { LinearGradient } from "expo-linear-gradient";
-// import { Ionicons } from "@expo/vector-icons";
-
-// export default function SubRoleScreen({ navigation }) {
-//   const subRoles = [
-//     { name: "Weather Enthusiast", page: "WeatherEnthusiast" },
-//     { name: "Professional Forecaster", page: "Forecaster" },
-//     { name: "Outdoor Activities", page: "OutdoorActivities" },
-//     { name: "Stargazer", page: "Stargazer" },
-//   ];
-
-//   const handleSelect = (role, page) => {
-//     // Navigate to RegisterEmail with role
-//     navigation.navigate("RegisterEmail", { role, nextPage: page });
-//   };
-
-//   return (
-//     <LinearGradient colors={["#0A002E", "#3B007A"]} style={styles.container}>
-//       <TouchableOpacity
-//         style={styles.back}
-//         onPress={() => navigation.goBack()}
-//       >
-//         <Ionicons name="arrow-back" size={26} color="#fff" />
-//       </TouchableOpacity>
-
-//       <Text style={styles.title}>Choose Your Category</Text>
-//       {subRoles.map((r) => (
-//         <TouchableOpacity
-//           key={r.name}
-//           style={styles.button}
-//           onPress={() => handleSelect(r.name, r.page)}
-//         >
-//           <LinearGradient
-//             colors={["#5A00C3", "#9B4DFF"]}
-//             style={styles.buttonGradient}
-//           >
-//             <Text style={styles.text}>{r.name}</Text>
-//           </LinearGradient>
-//         </TouchableOpacity>
-//       ))}
-//     </LinearGradient>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, justifyContent: "center", alignItems: "center" },
-//   back: { position: "absolute", top: 60, left: 20 },
-//   title: { color: "#fff", fontSize: 22, marginBottom: 30 },
-//   button: { width: 250, marginVertical: 10, borderRadius: 20, overflow: "hidden" },
-//   buttonGradient: { padding: 15, alignItems: "center" },
-//   text: { color: "#fff", fontSize: 16 },
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// screens/SubRoleScreen.js
-// import React from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// import { LinearGradient } from 'expo-linear-gradient';
-
-// export default function SubRoleScreen({ navigation, route }) {
-//   const { role } = route.params || {};
-
-//   const onSelect = (subrole) => {
-//     // for general users we default to email registration
-//     navigation.navigate('RegisterEmail', { role, subrole });
-//   };
-
-//   const onSelect = async () => {
-//     try {
-//       // Save user to Firestore
-//       await addDoc(collection(db, "users"), {
-//         role: selectedRole,
-//         language: language,
-//         createdAt: new Date(),
-//       });
-//     } catch (error) {
-//       console.warn("Firestore save failed:", error);
-//     }
-
-
-//   return (
-//     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
-//       <Text style={styles.h1}>What interests you most?</Text>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Weather Enthusiast')}>
-//         <Text style={styles.cardText}>Weather Enthusiast</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Professional Forecaster')}>
-//         <Text style={styles.cardText}>Professional Forecaster</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Outdoor Activities')}>
-//         <Text style={styles.cardText}>Outdoor Activities</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity style={styles.card} onPress={() => onSelect('Stargazers')}>
-//         <Text style={styles.cardText}>Stargazers</Text>
-//       </TouchableOpacity>
-//     </LinearGradient>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, alignItems: 'center', paddingTop: 50 },
-//   h1: { color: '#fff', fontSize: 18, marginBottom: 25 },
-//   card: { width: '80%', padding: 18, borderRadius: 14, marginVertical: 10, backgroundColor: 'rgba(255,255,255,0.04)', alignItems: 'center' },
-//   cardText: { color: '#fff', fontSize: 15 }
-// });
-
-
 // screens/SelectRoleScreen.js
 import React, { useState } from "react";
 import {
@@ -192,6 +65,7 @@ export default function SelectRoleScreen() {
 
   return (
     <LinearGradient colors={["#0F172A", "#1E1B4B"]} style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.contentWrapper}>
         {/* Top Bar */}
         <View style={styles.topBar}>
@@ -254,6 +128,7 @@ export default function SelectRoleScreen() {
           </LinearGradient>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -266,10 +141,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.05,
     paddingTop: Platform.OS === "web" ? 40 : height * 0.05,
   },
+  scrollContainer: { 
+    alignItems: 'center', 
+    paddingTop: 50, 
+    paddingBottom: 20,
+    paddingHorizontal: 16 // Add horizontal padding to prevent content overflow
+  },
   contentWrapper: {
     width: "100%",
-    maxWidth: 800, // keeps layout centered on web
+    maxWidth: Platform.OS === "web" ? 800 : width * .85, // Keeps layout centered on web
     alignSelf: "center",
+    paddingHorizontal: 16, // Add horizontal padding to prevent content overflow
+    margin: "auto",
   },
   topBar: {
     width: "100%",
@@ -311,7 +194,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
     borderRadius: 15,
-    marginBottom: Platform.OS === "web" ? 20 : 15,
+    marginBottom: Platform.OS === "web" ? 20 : 5,
     alignItems: "center",
     width: "100%",
   },
