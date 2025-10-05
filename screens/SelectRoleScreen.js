@@ -42,6 +42,9 @@ export default function SelectRoleScreen({ route, navigation }) {
     if (selectedRole === "General") {
       // Navigate to SubRoleScreen if the selected role is "General"
       navigation.navigate("SubRoleScreen", { language });
+    } else if (selectedRole === "Fishermen") {
+      // Navigate to SubRoleScreen if the selected role is "Fishermen"
+      navigation.navigate("Fishermen", { language });
     } else {
       // Navigate to the authentication screen with the selected role and language
       navigation.navigate("Farmer", { role: selectedRole, language });
