@@ -7,12 +7,6 @@ import BottomNav from '../../components/BottomNav'; // Import BottomNav componen
 import { Ionicons } from '@expo/vector-icons'; 
 export default function SkyForecast({ navigation }) {
   const { user, userData } = useContext(AuthContext);
-  const [name, setName] = useState('');
-
-  useEffect(() => {
-    if (userData?.name) setName(userData.name);
-    else if (user?.displayName) setName(user.displayName);
-  }, [user, userData]);
 
   return (
     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
@@ -23,8 +17,11 @@ export default function SkyForecast({ navigation }) {
 
       {/* Main Content */}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.h1}>Welcome{ name ? `, ${name}` : '' }!</Text>
-
+        <Text style={styles.title}>Weather Dashboard</Text>
+        <Text style={styles.subtitle}>
+          Personalized for {userData?.role || 'General User'}, {userData?.name || 'User'}!
+        </Text>
+        
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Sky Forecast</Text>

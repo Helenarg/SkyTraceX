@@ -2,7 +2,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons'; // For back button icon
 import { AuthContext } from '../../context/AuthProvider';
+import BottomNav from '../../components/BottomNav'; // Import BottomNav component
 
 export default function Fisherman({ navigation }) {
   const { user, userData } = useContext(AuthContext);
@@ -15,6 +17,11 @@ export default function Fisherman({ navigation }) {
 
   return (
     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="#fff" />
+      </TouchableOpacity>
+
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.h1}>Welcome{ name ? `, ${name}` : '' }!</Text>
 
@@ -99,12 +106,15 @@ export default function Fisherman({ navigation }) {
           <Text style={styles.alertText}>25km/h expected this afternoon</Text>
         </View>
       </ScrollView>
+
+      {/* Bottom Navigation */}
+      <BottomNav navigation={navigation} />
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, paddingBottom: 70 },
   scrollContainer: { alignItems: 'center', paddingTop: 50, paddingBottom: 20 },
   h1: { color: '#fff', fontSize: 22, marginBottom: 20 },
   section: { width: '90%', marginBottom: 20 },
@@ -160,5 +170,6 @@ const styles = StyleSheet.create({
     marginTop: 10 
   },
   alertTitle: { color: '#EF4444', fontSize: 16, fontWeight: 'bold' },
-  alertText: { color: '#fff', fontSize: 14 }
+  alertText: { color: '#fff', fontSize: 14 },
+  backButton: { padding: 10, position: 'absolute', top: 40, left: 20, zIndex: 10 },
 });

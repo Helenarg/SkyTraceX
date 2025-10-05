@@ -44,7 +44,7 @@ export default function SelectRoleScreen({ route, navigation }) {
       navigation.navigate("SubRoleScreen", { language });
     } else {
       // Navigate to the authentication screen with the selected role and language
-      navigation.navigate("RegisterMobile", { role: selectedRole, language });
+      navigation.navigate("Farmer", { role: selectedRole, language });
     }
   };
 
