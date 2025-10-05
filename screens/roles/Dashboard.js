@@ -3,21 +3,25 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AuthContext } from '../../context/AuthProvider';
-
+import BottomNav from '../../components/BottomNav'; // Import BottomNav component
+import { Ionicons } from '@expo/vector-icons'; 
 export default function SkyForecast({ navigation }) {
   const { user, userData } = useContext(AuthContext);
-  const [name, setName] = useState('');
-
-  useEffect(() => {
-    if (userData?.name) setName(userData.name);
-    else if (user?.displayName) setName(user.displayName);
-  }, [user, userData]);
 
   return (
     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.h1}>Welcome{ name ? `, ${name}` : '' }!</Text>
+      {/* Back Button */}
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="#fff" />
+      </TouchableOpacity>
 
+      {/* Main Content */}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Weather Dashboard</Text>
+        <Text style={styles.subtitle}>
+          Personalized for {userData?.role || 'General User'}, {userData?.name || 'User'}!
+        </Text>
+        
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Sky Forecast</Text>
@@ -275,14 +279,17 @@ export default function SkyForecast({ navigation }) {
           </View>
         </View>
       </ScrollView>
+      {/* Bottom Navigation */}
+      <BottomNav navigation={navigation} />
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, paddingBottom: 70 },
   scrollContent: { flexGrow: 1, alignItems: 'center', paddingBottom: 20 },
-  h1: { color: '#fff', fontSize: 22, marginTop: 50, marginBottom: 20 },
+  backButton: { padding: 10, position: 'absolute', top: 40, left: 20, zIndex: 10 },
+  h1: { color: '#fff', fontSize: 22, marginTop: 100, marginBottom: 20 },
   header: { alignItems: 'center', marginBottom: 20 },
   headerTitle: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
   headerSubtitle: { color: '#ccc', fontSize: 14 },
