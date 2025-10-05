@@ -1,446 +1,278 @@
-// screens/CommunityScreen.js
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Alert, Dimensions } from 'react-native';
+// screens/CommunityHubScreen.js
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { AuthContext } from '../context/AuthProvider';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import BottomNav from '../components/BottomNav'; // Import BottomNav component
 
-const { width } = Dimensions.get('window');
-
-export default function CommunityScreen({ navigation }) {
-  const { user, userData } = useContext(AuthContext);
-  const [name, setName] = useState('');
+export default function CommunityHubScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('groups');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [groups, setGroups] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [emergencies, setEmergencies] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // Mock stats - replace with Firestore query if needed
   const stats = [
-    { label: 'Members', value: '12.8K', color: '#00E0FF' },
-    { label: 'Posts', value: '2.3K', color: '#4ECDC4' },
-    { label: 'Groups', value: '1.8K', color: '#45B7D1' },
-    { label: 'Events', value: '12', color: '#96CEB4' },
+    { label: 'Members', value: '12.8k' },
+    { label: 'Events', value: '2.1k' },
+    { label: 'Groups', value: '1.8k' },
+    { label: 'Chat', value: '12' },
   ];
 
-  // Mock data for tabs
-  const mockGroups = [
-    { id: 1, name: 'Negombo Farmers Alliance', desc: '155 members in Negombo', status: 'New', icon: '🌾', members: 155, time: 'Tomorrow looks great for harvesting' },
-    { id: 2, name: 'West Coast Fishermen', desc: '80 members', status: 'Active', icon: '⚓', members: 80, time: 'Storm warning for tomorrow morning', updated: '30 min ago' },
-    { id: 3, name: 'Sri Lankan Weather Enthusiasts LK', desc: '234 members', status: '', icon: '☁️', members: 234, time: 'Amazing sunset photos yesterday' },
+  const groups = [
+    { id: 1, name: 'Negombo Farmers Alliance', status: 'Active', members: '155 members', desc: 'Tomorrow looks great for harvesting', badge: true },
+    { id: 2, name: 'West Coast Fishermen', status: 'Active', members: '80 members', desc: 'Storms warning for tomorrow morning', badge: false },
+    { id: 3, name: 'Sri Lankan Weather Tracking Community', status: 'Active', members: '234 members', desc: 'Amazing sunset photos yesterday', badge: false },
   ];
 
-  const mockEvents = [
-    { id: 1, name: 'Workshop on Preseason Farming Techniques and Crop Protection Strategies', desc: 'About monsoon preparation', time: '07/10/2025 @ 2:30 PM', location: 'Negombo Community Center', attendees: 15 },
-    { id: 2, name: 'Safety Equipment Check for Fish Processing', desc: 'Safety briefing', time: '08/10/2025 @ 10:00 AM', location: 'Negombo Fish Market', attendees: 20 },
+  const events = [
+    { id: 1, name: 'Workshop on Modern Farming Techniques and Crop Protection Strategies', time: '07/10/2025 02:17 PM', location: 'Negombo Community Center', attendees: '30 attending' },
+    { id: 2, name: 'Safety Equipment Check for All Fishing Vessels', time: '08/10/2025 10:47 AM', location: 'Dumping Harbor', attendees: '15 attending' },
   ];
 
-  const mockEmergencies = [
-    { id: 1, name: 'Storm Warning', desc: 'Medium risk along Chilaw coast. Fishermen advised to avoid deep sea beyond 10 miles', time: 'View Details', share: 'Share Alert' },
-    { id: 2, name: 'Heavy Rain Advisory', desc: 'Heavy rains expected in central regions. Consider delaying harvest activities and securing crops', time: 'View Details', share: 'Share Alert' },
+  const emergencies = [
+    { id: 1, title: 'Storm Warning', desc: 'Moderate storms, medium risk. Negombo to Chilaw coastal areas. Fishermen advised to avoid deep sea beyond 10 miles', severity: 'high', type: 'Storm' },
+    { id: 2, title: 'Heavy Rain Advisory', desc: 'Heavy rains expected in central farming regions. Consider delaying harvesting activities and securing crops', severity: 'medium', type: 'Rain' },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (user) {
-        try {
-          setName(userData.name || user.displayName || 'User');
-          // Fetch real data from Firestore collections: 'groups', 'events', 'emergencies'
-          // Example for groups:
-          // const groupsSnapshot = await getDocs(collection(db, 'groups'));
-          // setGroups(groupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-          setGroups(mockGroups);
-          setEvents(mockEvents);
-          setEmergencies(mockEmergencies);
-        } catch (error) {
-          console.error('Error fetching community data:', error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
+  const chats = [
+    { id: 1, name: 'General Weather Chat', lastMsg: 'User: Great day ahead!', time: '2 min ago', unread: 3 },
+    { id: 2, name: 'Farmer Support Group', lastMsg: 'Admin: New tips shared', time: '10 min ago', unread: 0 },
+    { id: 3, name: 'Emergency Alerts', lastMsg: 'System: Storm update', time: '1 hour ago', unread: 1 },
+  ];
 
-    fetchData();
-  }, [user]);
-
-  const filteredGroups = groups.filter(g => 
-    g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    g.desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredEvents = events.filter(e => 
-    e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredEmergencies = emergencies.filter(e => 
-    e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (loading) {
-    return (
-      <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
-        <Text style={styles.loadingText}>Loading community...</Text>
-      </LinearGradient>
-    );
-  }
-
-  const renderStat = ({ item }) => (
-    <View style={[styles.statCard, { borderColor: item.color }]}>
-      <Text style={styles.statValue}>{item.value}</Text>
-      <Text style={styles.statLabel}>{item.label}</Text>
+  const renderTabBar = () => (
+    <View style={styles.tabBar}>
+      {['groups', 'events', 'emergency', 'chat'].map(tab => (
+        <TouchableOpacity
+          key={tab}
+          style={[styles.tab, activeTab === tab && styles.activeTab]}
+          onPress={() => setActiveTab(tab)}
+        >
+          <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </Text>
+          {activeTab === tab && <View style={styles.activeIndicator} />}
+        </TouchableOpacity>
+      ))}
     </View>
   );
 
-  const renderGroup = ({ item }) => (
-    <TouchableOpacity style={styles.groupCard}>
-      <View style={styles.groupHeader}>
-        <Text style={styles.groupIcon}>{item.icon}</Text>
-        <View style={styles.groupInfo}>
-          <Text style={styles.groupName}>{item.name}</Text>
-          <Text style={styles.groupDesc}>{item.desc}</Text>
-        </View>
-        {item.status && <View style={styles.statusBadge}><Text style={styles.statusText}>{item.status}</Text></View>}
+  const renderGroups = () => (
+    <ScrollView style={[styles.content, { marginBottom: 70 }]}>
+      <View style={styles.searchRow}>
+        <TextInput style={styles.searchInput} placeholder="Search groups" placeholderTextColor="#aaa" />
+        <TouchableOpacity style={styles.filterBtn}>
+          <Text style={styles.filterText}>All groups</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.groupTime}>{item.time}</Text>
-      {item.updated && <Text style={styles.groupUpdated}>{item.updated}</Text>}
-    </TouchableOpacity>
-  );
-
-  const renderEvent = ({ item }) => (
-    <TouchableOpacity style={styles.eventCard}>
-      <Text style={styles.eventName}>{item.name}</Text>
-      <Text style={styles.eventDesc}>{item.desc}</Text>
-      <View style={styles.eventFooter}>
-        <Text style={styles.eventTime}>{item.time}</Text>
-        <Text style={styles.eventLocation}>{item.location}</Text>
-        <Text style={styles.eventAttendees}>{item.attendees} attending</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderEmergency = ({ item }) => (
-    <View style={styles.emergencyCard}>
-      <Text style={styles.emergencyName}>{item.name}</Text>
-      <Text style={styles.emergencyDesc}>{item.desc}</Text>
-      <View style={styles.emergencyButtons}>
-        <TouchableOpacity style={styles.emergencyButton}><Text style={styles.emergencyButtonText}>{item.time}</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.emergencyButton}><Text style={styles.emergencyButtonText}>{item.share}</Text></TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'groups':
-        return (
-          <FlatList
-            data={filteredGroups}
-            renderItem={renderGroup}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            style={styles.tabContentList}
-          />
-        );
-      case 'events':
-        return (
-          <FlatList
-            data={filteredEvents}
-            renderItem={renderEvent}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            style={styles.tabContentList}
-          />
-        );
-      case 'emergency':
-        return (
-          <FlatList
-            data={filteredEmergencies}
-            renderItem={renderEmergency}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            style={styles.tabContentList}
-          />
-        );
-      case 'chat':
-        return (
-          <View style={styles.chatPlaceholder}>
-            <Ionicons name="chatbubble-outline" size={80} color="rgba(255,255,255,0.3)" />
-            <Text style={styles.chatText}>Chat features coming soon!</Text>
+      {groups.map(group => (
+        <TouchableOpacity key={group.id} style={styles.groupCard}>
+          <View style={styles.groupHeader}>
+            <Text style={styles.groupName}>{group.name}</Text>
+            <View style={[styles.statusBadge, group.status === 'Active' && styles.activeBadge]}>
+              <Text style={styles.statusText}>{group.status}</Text>
+            </View>
           </View>
-        );
-      default:
-        return null;
+          <Text style={styles.groupMembers}>{group.members} in Negombo</Text>
+          <Text style={styles.groupDesc}>{group.desc}</Text>
+          {group.badge && <View style={styles.newBadge}><Text style={styles.newBadgeText}>New</Text></View>}
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+
+  const renderEvents = () => (
+    <ScrollView style={styles.content}>
+      <View style={styles.eventsHeader}>
+        <Text style={styles.eventsTitle}>Upcoming Events</Text>
+        <TouchableOpacity style={styles.createEventBtn}>
+          <Text style={styles.createEventText}>+ Create Event</Text>
+        </TouchableOpacity>
+      </View>
+      {events.map(event => (
+        <TouchableOpacity key={event.id} style={styles.eventCard}>
+          <Text style={styles.eventName}>{event.name}</Text>
+          <Text style={styles.eventTime}>{event.time}</Text>
+          <Text style={styles.eventLocation}>{event.location}</Text>
+          <Text style={styles.eventAttendees}>{event.attendees}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+
+  const renderEmergency = () => (
+    <ScrollView style={styles.content}>
+      <Text style={styles.emergencyTitle}>Emergency & Response</Text>
+      {emergencies.map(emergency => (
+        <View key={emergency.id} style={[styles.alertCard, { backgroundColor: emergency.severity === 'high' ? '#fee2e2' : '#fef3c7' }]}>
+          <View style={styles.alertHeader}>
+            <Text style={styles.alertTitle}>{emergency.title}</Text>
+            <Ionicons name={emergency.severity === 'high' ? 'warning' : 'information-circle'} size={20} color="#dc2626" />
+          </View>
+          <Text style={styles.alertDesc}>{emergency.desc}</Text>
+          <View style={styles.alertFooter}>
+            <TouchableOpacity style={styles.viewDetailsBtn}>
+              <Text style={styles.viewDetailsText}>View Details</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.shareBtn}>
+              <Text style={styles.shareText}>Share Alert</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
+      <View style={styles.contactRow}>
+        <TouchableOpacity style={styles.contactBtn}>
+          <Ionicons name="call" size={20} color="#fff" />
+          <Text style={styles.contactText}>119/110</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.contactBtn}>
+          <Ionicons name="boat" size={20} color="#fff" />
+          <Text style={styles.contactText}>94 11 4564</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.contactBtn}>
+          <Ionicons name="alert-circle" size={20} color="#fff" />
+          <Text style={styles.contactText}>94 11 2606</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+
+  const renderChat = () => (
+    <ScrollView style={styles.content}>
+      <Text style={styles.chatTitle}>All Chats</Text>
+      {chats.map(chat => (
+        <TouchableOpacity key={chat.id} style={styles.chatCard}>
+          <View style={styles.chatAvatar} />
+          <View style={styles.chatInfo}>
+            <Text style={styles.chatName}>{chat.name}</Text>
+            <Text style={styles.chatLastMsg}>{chat.lastMsg}</Text>
+          </View>
+          <View style={styles.chatMeta}>
+            <Text style={styles.chatTime}>{chat.time}</Text>
+            {chat.unread > 0 && <View style={styles.unreadBadge}><Text style={styles.unreadText}>{chat.unread}</Text></View>}
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'groups': return renderGroups();
+      case 'events': return renderEvents();
+      case 'emergency': return renderEmergency();
+      case 'chat': return renderChat();
+      default: return renderGroups();
     }
   };
 
   return (
     <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
-      <FlatList
-        data={[]}
-        keyExtractor={(item, index) => index.toString()}
-        ListHeaderComponent={
-          <>
-            {/* Header */}
-            <View style={styles.header}>
-              <LinearGradient
-                colors={['rgba(255,255,255,0.1)', 'transparent']}
-                style={styles.headerGradient}
-              >
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  style={styles.backButton}
-                >
-                  <Ionicons name="arrow-back" size={24} color="#fff" />
-                </TouchableOpacity>
-                <View style={styles.headerContent}>
-                  <Text style={styles.greeting}>SKYTRACE Community</Text>
-                  <Text style={styles.subtitle}>
-                    Connect, share & learn with weather-focused farmers, fishers &
-                    researchers
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Profile')}
-                  style={styles.profileButton}
-                >
-                  <Ionicons name="person-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-              </LinearGradient>
-              <FlatList
-                data={stats}
-                renderItem={renderStat}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.statsContainer}
-              />
-            </View>
+      {/* Back Button */}
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="#fff" />
+      </TouchableOpacity>
 
-            {/* Community Hub */}
-            <View style={styles.hubSection}>
-              <Text style={styles.hubTitle}>Community Hub</Text>
-              <View style={styles.hubButtons}>
-                <TouchableOpacity style={styles.createButton}>
-                  <Text style={styles.createButtonText}>Create Group</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.emergencyHubButton}
-                  onPress={() => setActiveTab('emergency')}
-                >
-                  <Ionicons name="warning" size={16} color="#fff" />
-                  <Text style={styles.emergencyHubText}>Emergency</Text>
-                </TouchableOpacity>
-              </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>SkyTrace Community</Text>
+        <Text style={styles.headerSubtitle}>Connect, share and learn with weather enthusiasts, farmers, fishermen, and researchers</Text>
+        <View style={styles.statsRow}>
+          {stats.map(stat => (
+            <View key={stat.label} style={styles.statCard}>
+              <Text style={styles.statValue}>{stat.value}</Text>
+              <Text style={styles.statLabel}>{stat.label}</Text>
             </View>
-
-            {/* Tab Bar */}
-            <View style={styles.tabBar}>
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search groups..."
-                placeholderTextColor="rgba(255,255,255,0.5)"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              <View style={styles.tabButtons}>
-                {['groups', 'events', 'emergency', 'chat'].map((tab) => (
-                  <TouchableOpacity
-                    key={tab}
-                    style={[
-                      styles.tabButton,
-                      activeTab === tab && styles.activeTabButton,
-                    ]}
-                    onPress={() => setActiveTab(tab)}
-                  >
-                    <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === tab && styles.activeTabText,
-                      ]}
-                    >
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </Text>
-                    {activeTab === tab && <View style={styles.tabUnderline} />}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          </>
-        }
-        renderItem={null} // No data for the main FlatList
-        ListFooterComponent={
-          <View style={styles.contentSection}>{renderTabContent()}</View>
-        }
-      />
-      <View style={styles.bottomNavbar}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Ionicons name="home" size={24} color="#fff" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Dashboard')}
-        >
-          <Ionicons name="stats-chart" size={24} color="#fff" />
-          <Text style={styles.navText}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => {
-            /* Already on Community */
-          }}
-        >
-          <Ionicons name="people" size={24} color="#fff" />
-          <Text style={styles.navText}>Community</Text>
-        </TouchableOpacity>
+          ))}
+        </View>
       </View>
+
+      {/* Community Hub */}
+      <View style={styles.hubSection}>
+        <Text style={styles.hubTitle}>Community Hub</Text>
+        <View style={styles.actionBtns}>
+          <TouchableOpacity style={styles.createBtn}>
+            <Text style={styles.createText}>+ Create Group</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.emergencyBtn}>
+            <Text style={styles.emergencyText}>🚨</Text>
+          </TouchableOpacity>
+        </View>
+        {renderTabBar()}
+        {renderContent()}
+      </View>
+
+      {/* Bottom Navigation */}
+      <BottomNav navigation={navigation} />
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { paddingHorizontal: 20, paddingTop: 50 },
-  headerGradient: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 10,
-  },
-  backButton: { padding: 5 },
-  headerContent: { alignItems: 'center', flex: 1 },
-  greeting: { color: '#fff', fontSize: 24, fontWeight: 'bold', textAlign: 'center' },
-  subtitle: { color: 'rgba(255,255,255,0.7)', fontSize: 14, textAlign: 'center', marginTop: 5 },
-  profileButton: { padding: 5 },
-  statsContainer: { paddingVertical: 10 },
-  statCard: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 12,
-    padding: 15,
-    marginRight: 15,
-    alignItems: 'center',
-    borderWidth: 1,
-    minWidth: 70,
-  },
+  container: { flex: 1, paddingBottom: 70 },
+  backButton: { padding: 10, position: 'absolute', top: 40, left: 20, zIndex: 10 },
+  header: { padding: 20, paddingTop: 80 },
+  headerTitle: { color: '#fff', fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
+  headerSubtitle: { color: '#ccc', fontSize: 14, marginBottom: 20, lineHeight: 20 },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%' },
+  statCard: { alignItems: 'center' },
   statValue: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  statLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 12 },
-  mainContent: { flex: 1, paddingHorizontal: 20 },
-  hubSection: { marginBottom: 20 },
-  hubTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  hubButtons: { flexDirection: 'row', justifyContent: 'space-between' },
-  createButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  createButtonText: { color: '#fff', fontSize: 14 },
-  emergencyHubButton: {
-    backgroundColor: '#FF4444',
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  emergencyHubText: { color: '#fff', fontSize: 14, marginLeft: 5 },
-  tabBar: { marginBottom: 20 },
-  searchInput: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    color: '#fff',
-    fontSize: 14,
-    marginBottom: 15,
-  },
-  tabButtons: { flexDirection: 'row', justifyContent: 'space-around' },
-  tabButton: { paddingVertical: 10 },
-  activeTabButton: { },
-  tabText: { color: 'rgba(255,255,255,0.7)', fontSize: 14 },
-  activeTabText: { color: '#fff', fontWeight: 'bold' },
-  tabUnderline: { height: 2, backgroundColor: '#00E0FF', alignSelf: 'center', marginTop: 5, width: 30 },
-  contentSection: { flex: 1 },
-  tabContentList: { flex: 1 },
-  groupCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
-  groupHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  groupIcon: { fontSize: 24, marginRight: 10 },
-  groupInfo: { flex: 1 },
-  groupName: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  groupDesc: { color: 'rgba(255,255,255,0.7)', fontSize: 14 },
-  statusBadge: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  statusText: { color: '#fff', fontSize: 12 },
-  groupTime: { color: '#fff', fontSize: 14 },
-  groupUpdated: { color: 'rgba(255,255,255,0.5)', fontSize: 12 },
-  eventCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
+  statLabel: { color: '#aaa', fontSize: 12 },
+  hubSection: { flex: 1, paddingHorizontal: 20 },
+  hubTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', marginBottom: 15 },
+  actionBtns: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  createBtn: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.1)' },
+  createText: { color: '#fff', fontSize: 14 },
+  emergencyBtn: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#ef4444', alignItems: 'center', justifyContent: 'center' },
+  emergencyText: { color: '#fff', fontSize: 20 },
+  tabBar: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: 4, marginBottom: 20 },
+  tab: { flex: 1, paddingVertical: 12, alignItems: 'center', position: 'relative' },
+  activeTab: { borderRadius: 6 },
+  tabText: { color: '#aaa', fontSize: 14, fontWeight: '500' },
+  activeTabText: { color: '#fff' },
+  activeIndicator: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: '#fff' },
+  content: { flex: 1 },
+  searchRow: { flexDirection: 'row', marginBottom: 20 },
+  searchInput: { flex: 1, padding: 12, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.05)', color: '#fff', marginRight: 10 },
+  filterBtn: { paddingHorizontal: 15, paddingVertical: 12, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.05)' },
+  filterText: { color: '#fff' },
+  groupCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 15, marginBottom: 15, position: 'relative' },
+  groupHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
+  groupName: { color: '#fff', fontSize: 16, fontWeight: 'bold', flex: 1 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20, backgroundColor: 'rgba(34,197,94,0.2)' },
+  activeBadge: { backgroundColor: 'rgba(34,197,94,0.2)' },
+  statusText: { color: '#22c55e', fontSize: 12 },
+  groupMembers: { color: '#aaa', fontSize: 12, marginBottom: 5 },
+  groupDesc: { color: '#ccc', fontSize: 14 },
+  newBadge: { position: 'absolute', top: 10, right: 10, backgroundColor: '#ef4444', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2 },
+  newBadgeText: { color: '#fff', fontSize: 10 },
+  eventsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  eventsTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  createEventBtn: { paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.1)' },
+  createEventText: { color: '#fff', fontSize: 14 },
+  eventCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 15, marginBottom: 15 },
   eventName: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
-  eventDesc: { color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 10 },
-  eventFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  eventTime: { color: '#fff', fontSize: 14 },
-  eventLocation: { color: 'rgba(255,255,255,0.7)', fontSize: 14 },
-  eventAttendees: { color: '#00E0FF', fontSize: 14, fontWeight: 'bold' },
-  emergencyCard: {
-    backgroundColor: 'rgba(255,68,68,0.2)',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
-  emergencyName: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
-  emergencyDesc: { color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 10 },
-  emergencyButtons: { flexDirection: 'row', justifyContent: 'space-between' },
-  emergencyButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    flex: 0.48,
-    alignItems: 'center',
-  },
-  emergencyButtonText: { color: '#fff', fontSize: 12 },
-  chatPlaceholder: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 50,
-  },
-  chatText: { color: 'rgba(255,255,255,0.7)', fontSize: 16, marginTop: 10 },
-  bottomNavbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: { alignItems: 'center' },
-  navText: { color: '#fff', fontSize: 12, marginTop: 5 },
-  loadingText: { color: '#fff', fontSize: 16, textAlign: 'center', flex: 1, justifyContent: 'center' },
+  eventTime: { color: '#aaa', fontSize: 12, marginBottom: 5 },
+  eventLocation: { color: '#aaa', fontSize: 12, marginBottom: 5 },
+  eventAttendees: { color: '#ccc', fontSize: 14 },
+  emergencyTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
+  alertCard: { borderRadius: 12, padding: 15, marginBottom: 15 },
+  alertHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  alertTitle: { color: '#dc2626', fontSize: 16, fontWeight: 'bold', flex: 1 },
+  alertDesc: { color: '#666', fontSize: 14, marginBottom: 15, lineHeight: 20 },
+  alertFooter: { flexDirection: 'row', justifyContent: 'space-between' },
+  viewDetailsBtn: { paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.2)' },
+  viewDetailsText: { color: '#fff', fontSize: 12 },
+  shareBtn: { paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8, backgroundColor: 'rgba(59,130,246,0.2)' },
+  shareText: { color: '#3b82f6', fontSize: 12 },
+  contactRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 },
+  contactBtn: { backgroundColor: '#3b82f6', borderRadius: 10, padding: 15, alignItems: 'center', flex: 1, marginHorizontal: 5 },
+  contactText: { color: '#fff', fontSize: 12, marginTop: 5 },
+  chatTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
+  chatCard: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 15, marginBottom: 15, alignItems: 'center' },
+  chatAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#aaa', marginRight: 15 },
+  chatInfo: { flex: 1 },
+  chatName: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
+  chatLastMsg: { color: '#ccc', fontSize: 14 },
+  chatMeta: { alignItems: 'flex-end' },
+  chatTime: { color: '#aaa', fontSize: 12, marginBottom: 5 },
+  unreadBadge: { backgroundColor: '#ef4444', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2, minWidth: 20, alignItems: 'center' },
+  unreadText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
 });

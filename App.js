@@ -1,69 +1,3 @@
-// // App.js
-// import React from 'react';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import { AuthProvider } from './context/AuthProvider';
-
-// import SplashScreen from './screens/SplashScreen';
-// import LanguageScreen from './screens/LanguageScreen';
-// import SelectRoleScreen from './screens/SelectRoleScreen';
-// import SubRoleScreen from './screens/SubRoleScreen';
-// import RegisterMobileScreen from './screens/RegisterMobileScreen';
-// import OtpScreen from './screens/OtpScreen';
-// import RegisterEmailScreen from './screens/RegisterEmailScreen';
-// import LoginEmailScreen from './screens/LoginEmailScreen';
-// import HomeScreen from './screens/HomeScreen';
-
-// // role pages
-// import Farmer from './screens/roles/Farmer';
-// import Fisherman from './screens/roles/Fisherman';
-// import GeneralUser from './screens/roles/GeneralUser';
-// import WeatherEnthusiast from './screens/roles/WeatherEnthusiast';
-// import Forecaster from './screens/roles/Forecaster';
-// import OutdoorActivities from './screens/roles/OutdoorActivities';
-// import Stargazer from './screens/roles/Stargazer';
-
-// const Stack = createNativeStackNavigator();
-
-// export default function App() {
-//   return (
-//     <AuthProvider>
-//       <NavigationContainer>
-//         <Stack.Navigator
-//           initialRouteName="Splash"
-//           screenOptions={{
-//             headerTintColor: '#fff',
-//             headerStyle: { backgroundColor: 'transparent' },
-//             headerBackTitleVisible: false
-//           }}
-//         >
-//           <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-//           <Stack.Screen name="Language" component={LanguageScreen} options={{ headerShown: false }} />
-//           <Stack.Screen name="SelectRole" component={SelectRoleScreen} options={{ title: 'Select Role' }} />
-//           <Stack.Screen name="SubRole" component={SubRoleScreen} options={{ title: 'Select Subrole' }} />
-//           <Stack.Screen name="RegisterMobile" component={RegisterMobileScreen} options={{ title: 'Register - Mobile' }} />
-//           <Stack.Screen name="Otp" component={OtpScreen} options={{ title: 'Enter OTP' }} />
-//           <Stack.Screen name="RegisterEmail" component={RegisterEmailScreen} options={{ title: 'Register - Email' }} />
-//           <Stack.Screen name="LoginEmail" component={LoginEmailScreen} options={{ title: 'Login' }} />
-//           <Stack.Screen name="Home" component={HomeScreen} options={{ headerLeft: () => null, gestureEnabled: false }} />
-
-//           {/* role screens */}
-//           <Stack.Screen name="Farmer" component={Farmer} />
-//           <Stack.Screen name="Fisherman" component={Fisherman} />
-//           <Stack.Screen name="GeneralUser" component={GeneralUser} />
-//           <Stack.Screen name="WeatherEnthusiast" component={WeatherEnthusiast} />
-//           <Stack.Screen name="Forecaster" component={Forecaster} />
-//           <Stack.Screen name="OutdoorActivities" component={OutdoorActivities} />
-//           <Stack.Screen name="Stargazer" component={Stargazer} />
-//         </Stack.Navigator>
-//       </NavigationContainer>
-//     </AuthProvider>
-//   );
-// }
-
-
-
-
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -76,6 +10,7 @@ import LoginEmailScreen from "./screens/LoginEmailScreen";
 import { AuthProvider } from "./context/AuthProvider";
 import Home from "./screens/HomeScreen";
 import CommunityScreen from "./screens/CommunityScreen";
+import Dashboard from "./screens/roles/Dashboard";
 
 // import LoginMobileScreen from "./screens/LoginMobileScreen";
 // import HomeScreen from "./screens/HomeScreen";
@@ -104,6 +39,7 @@ export default function App() {
         <Stack.Screen name="Fisherman" component={Fisherman} />
         <Stack.Screen name="Farmer" component={Farmer} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="Community" component={CommunityScreen} />
       </Stack.Navigator>
     </NavigationContainer>
