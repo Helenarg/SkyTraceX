@@ -4,12 +4,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAcOHgu5q-wKMa9z0ngyKe_PBBSLbYRRyo",
-  authDomain: "nasa-space-apps-8cb18.firebaseapp.com",
-  projectId: "nasa-space-apps-8cb18",
-  storageBucket: "nasa-space-apps-8cb18.firebasestorage.app",
-  messagingSenderId: "999080727769",
-  appId: "1:999080727769:web:2f3400e827bdbb7bb91ac8"
+  apiKey: "AIzaSyC5F_FJlh3dVctHjYaAwluac6EjjfE5ZoU",
+  authDomain: "skytrace-2d80b.firebaseapp.com",
+  projectId: "skytrace-2d80b",
+  storageBucket: "skytrace-2d80b.firebasestorage.app",
+  messagingSenderId: "187507627137",
+  appId: "1:187507627137:web:90705c02aaa5a5dbe96980",
+  measurementId: "G-G1EQSH9R7Q"
 };
 
 const app = initializeApp(firebaseConfig);

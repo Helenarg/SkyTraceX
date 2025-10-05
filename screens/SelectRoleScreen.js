@@ -26,7 +26,7 @@ export default function SelectRoleScreen({ route, navigation }) {
     },
     {
       id: "Fisherman",
-      title: "Fisherman / මාළුව / மீனவர்",
+      title: "Fisherman / ධීවරයා / மீனவர்",
       desc: "Sea conditions and safety alerts for fishing",
       icon: "🌊",
     },
@@ -42,9 +42,9 @@ export default function SelectRoleScreen({ route, navigation }) {
     if (selectedRole === "General") {
       // Navigate to SubRoleScreen if the selected role is "General"
       navigation.navigate("SubRoleScreen", { language });
-    } else if (selectedRole === "Fishermen") {
-      // Navigate to SubRoleScreen if the selected role is "Fishermen"
-      navigation.navigate("Fishermen", { language });
+    } else if (selectedRole === "Fisherman") {
+      // Navigate to SubRoleScreen if the selected role is "Fisherman"
+      navigation.navigate("Fisherman", { language });
     } else {
       // Navigate to the authentication screen with the selected role and language
       navigation.navigate("Farmer", { role: selectedRole, language });

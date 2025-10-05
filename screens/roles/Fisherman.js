@@ -5,6 +5,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons'; // For back button icon
 import { AuthContext } from '../../context/AuthProvider';
 import BottomNav from '../../components/BottomNav'; // Import BottomNav component
+import Header from '../../components/Header';
+import FishingZoneSelector from '../../components/FishingZoneSelector';
+import SeaConditionsCards from '../../components/SeaConditionsCards';
+import FishingConditionsSummary from '../../components/FishingConditionsSummary';
+import ActionButtons from '../../components/ActionButtons';
 
 export default function Fisherman({ navigation }) {
   const { user, userData } = useContext(AuthContext);
@@ -15,8 +20,22 @@ export default function Fisherman({ navigation }) {
     else if (user?.displayName) setName(user.displayName);
   }, [user, userData]);
 
+  const seaConditions = [
+    { icon: '🌊', value: '1.5m', label: 'Wave Height', status: 'Safe' },
+    { icon: '🌬', value: '25km/h', label: 'Wind Speed', status: 'Caution' },
+    { icon: '⛈', value: '30%', label: 'Storm Risk', status: 'Low' },
+    { icon: '👁', value: '8km', label: 'Visibility', status: 'Good' },
+  ];
+
+  const actions = [
+    { label: 'Generate Report', onPress: () => console.log('Generate Report') },
+    { label: 'Sea Conditions Map', onPress: () => console.log('Sea Conditions Map') },
+    { label: 'Weather Alerts', onPress: () => console.log('Weather Alerts') },
+    { label: 'Community', onPress: () => console.log('Community') },
+  ];
+
   return (
-    <LinearGradient colors={["#0A0B14", "#270054"]} style={styles.container}>
+    <LinearGradient colors={['#0A0B14', '#270054']} style={{ flex: 1 }}>
       {/* Back Button */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -25,86 +44,11 @@ export default function Fisherman({ navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.h1}>Welcome{ name ? `, ${name}` : '' }!</Text>
 
-        {/* Your Fishing Zone Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Fishing Zone</Text>
-          
-          <View style={styles.selectRow}>
-            <TouchableOpacity style={styles.selectCard}>
-              <Text style={styles.selectLabel}>Select Zone Area</Text>
-              <Text style={styles.selectValue}>Gulf of Mannar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.selectCard}>
-              <Text style={styles.selectLabel}>Boat Type</Text>
-              <Text style={styles.selectValue}>Trawler</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Current Sea Conditions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Current Sea Conditions</Text>
-          
-          <View style={styles.cardRow}>
-            <View style={styles.conditionCard}>
-              <Text style={styles.conditionIcon}>🌊</Text>
-              <Text style={styles.conditionValue}>1.5m</Text>
-              <Text style={styles.conditionLabel}>Wave Height</Text>
-              <Text style={styles.conditionStatus}>Safe</Text>
-            </View>
-            <View style={styles.conditionCard}>
-              <Text style={styles.conditionIcon}>🌬</Text>
-              <Text style={styles.conditionValue}>25km/h</Text>
-              <Text style={styles.conditionLabel}>Wind Speed</Text>
-              <Text style={styles.conditionStatus}>Caution</Text>
-            </View>
-            <View style={styles.conditionCard}>
-              <Text style={styles.conditionIcon}>⛈</Text>
-              <Text style={styles.conditionValue}>30%</Text>
-              <Text style={styles.conditionLabel}>Storm Risk</Text>
-              <Text style={styles.conditionStatus}>Low</Text>
-            </View>
-            <View style={styles.conditionCard}>
-              <Text style={styles.conditionIcon}>👁</Text>
-              <Text style={styles.conditionValue}>8km</Text>
-              <Text style={styles.conditionLabel}>Visibility</Text>
-              <Text style={styles.conditionStatus}>Good</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Good Fishing Conditions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Good Fishing Conditions</Text>
-          <Text style={styles.sectionSubtitle}>Moderate wind conditions expected</Text>
-          
-          <View style={styles.safeCard}>
-            <Text style={styles.safePercent}>85% Safe</Text>
-            <Text style={styles.safeText}>Good within 10 nautical miles</Text>
-          </View>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>Weather Report</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>Sea Conditions Map</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>Weather Alerts</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>Community</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Wind Advisory Alert */}
-        <View style={styles.alertCard}>
-          <Text style={styles.alertTitle}>⚠️ Wind Advisory</Text>
-          <Text style={styles.alertText}>25km/h expected this afternoon</Text>
-        </View>
+        <Header title="Fishermen Dashboard" location="Colombo, Sri Lanka" status="Online" />
+        <FishingZoneSelector onZoneSelect={() => console.log('Zone Selected')} onBoatSelect={() => console.log('Boat Selected')} />
+        <SeaConditionsCards conditions={seaConditions} />
+        <FishingConditionsSummary safetyPercentage={85} />
+        <ActionButtons actions={actions} />
       </ScrollView>
 
       {/* Bottom Navigation */}
